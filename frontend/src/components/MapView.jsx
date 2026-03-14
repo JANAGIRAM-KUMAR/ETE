@@ -2,11 +2,6 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-const containerStyle = {
-  width: "100%",
-  height: "500px",
-};
-
 const defaultCenter = [20.5937, 78.9629]; // India center fallback
 
 /* Custom coloured marker icons */
@@ -27,11 +22,6 @@ const redIcon = createIcon("red");
 
 /**
  * MapView — displays user, volunteer, and emergency markers on OpenStreetMap.
- *
- * @param {Object} props
- * @param {{ lat: number, lng: number }|null} props.userLocation
- * @param {Array<{ _id: string, location: { coordinates: [number, number] }, name?: string }>} props.volunteers
- * @param {{ lat: number, lng: number }|null} props.emergencyLocation
  */
 const MapView = ({ userLocation, volunteers = [], emergencyLocation }) => {
   const center = userLocation
@@ -39,46 +29,45 @@ const MapView = ({ userLocation, volunteers = [], emergencyLocation }) => {
     : defaultCenter;
 
   return (
-    <MapContainer center={center} zoom={14} style={containerStyle}>
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+    <div className="w-full h-[500px] rounded-xl overflow-hidden shadow-lg border border-gray-200">
+      <MapContainer center={center} zoom={14} className="w-full h-full">
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
 
-      {/* User's current location — blue marker */}
-      {userLocation && (
-        <Marker
-          position={[userLocation.lat, userLocation.lng]}
-          icon={blueIcon}
-        >
-          <Popup>Your Location</Popup>
-        </Marker>
-      )}
+        {/* User's current location — blue marker */}
+        {userLocation && (
+          <Marker position={[userLocation.lat, userLocation.lng]} icon={blueIcon}>
+            <Popup>Your Location</Popup>
+          </Marker>
+        )}
 
-      {/* Volunteer markers — green */}
-      {volunteers.map((vol) => (
-        <Marker
-          key={vol._id}
-          position={[
-            vol.location.coordinates[1],
-            vol.location.coordinates[0],
-          ]}
-          icon={greenIcon}
-        >
-          <Popup>{vol.name || "Volunteer"}</Popup>
-        </Marker>
-      ))}
+        {/* Volunteer markers — green */}
+        {volunteers.map((vol) => (
+          <Marker
+            key={vol._id}
+            position={[
+              vol.location.coordinates[1],
+              vol.location.coordinates[0],
+            ]}
+            icon={greenIcon}
+          >
+            <Popup>{vol.name || "Volunteer"}</Popup>
+          </Marker>
+        ))}
 
-      {/* Emergency location — red marker */}
-      {emergencyLocation && (
-        <Marker
-          position={[emergencyLocation.lat, emergencyLocation.lng]}
-          icon={redIcon}
-        >
-          <Popup>Emergency</Popup>
-        </Marker>
-      )}
-    </MapContainer>
+        {/* Emergency location — red marker */}
+        {emergencyLocation && (
+          <Marker
+            position={[emergencyLocation.lat, emergencyLocation.lng]}
+            icon={redIcon}
+          >
+            <Popup>Emergency</Popup>
+          </Marker>
+        )}
+      </MapContainer>
+    </div>
   );
 };
 
