@@ -1,57 +1,71 @@
-import React, { useState, useEffect } from "react";
-import Navbar from "./components/Navbar";
-import SOSButton from "./components/SOSButton";
-import MapView from "./components/MapView";
-import ChatBox from "./components/ChatBox";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import UserDashboard from "./pages/UserDashboard";
+import VolunteerDashboard from "./pages/VolunteerDashboard";
+import EmergencyPage from "./pages/EmergencyPage";
+
+const ProtectedRoute = ({ children, role }) => {
+  const { user, isAuthenticated, authLoading } = useAuth();
+
+  // Wait for the localStorage auth check before deciding to redirect.
+  // Without this guard, user is null on first render and we flash to /login.
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-400 text-lg animate-pulse">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (role && user?.role !== role) {
+    return <Navigate to={user?.role === "volunteer" ? "/volunteer" : "/dashboard"} replace />;
+  }
+  return children;
+};
 
 function App() {
-  const [location, setLocation] = useState(null);
-
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition((pos) => {
-      setLocation({
-        latitude: pos.coords.latitude,
-        longitude: pos.coords.longitude
-      });
-    });
-  }, []);
+  const { user } = useAuth();
 
   return (
-    <div
-      style={{
-        background: "#f4f6f9",
-        minHeight: "100vh",
-        fontFamily: "Segoe UI, sans-serif"
-      }}
-    >
-      <Navbar />
-
-      <div style={{ textAlign: "center", marginTop: "25px" }}>
-        <h1 style={{ fontSize: "30px", color: "#222" }}>
-          Smart Community Emergency Response System
-        </h1>
-        <p style={{ fontSize: "16px", color: "#555" }}>
-          Instant help from nearby responders
-        </p>
-      </div>
-
-      <SOSButton />
-
-      <div
-        style={{
-          width: "90%",
-          margin: "auto",
-          marginTop: "30px",
-          borderRadius: "14px",
-          overflow: "hidden",
-          boxShadow: "0px 6px 18px rgba(0,0,0,0.15)"
-        }}
-      >
-        {location && <MapView location={location} />}
-      </div>
-
-      <ChatBox />
-    </div>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute role="user">
+            <UserDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/volunteer"
+        element={
+          <ProtectedRoute role="volunteer">
+            <VolunteerDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/emergency/:id"
+        element={
+          <ProtectedRoute>
+            <EmergencyPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="*"
+        element={
+          user
+            ? <Navigate to={user.role === "volunteer" ? "/volunteer" : "/dashboard"} replace />
+            : <Navigate to="/login" replace />
+        }
+      />
+    </Routes>
   );
 }
 

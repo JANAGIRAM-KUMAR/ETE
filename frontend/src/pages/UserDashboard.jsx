@@ -1,23 +1,20 @@
 import React from "react";
 import Navbar from "../components/Navbar";
 import SOSButton from "../components/SOSButton";
-import { useEmergency } from "../context/EmergencyEmergency";
+import { useAuth } from "../context/AuthContext";
 
 const UserDashboard = () => {
-  const { triggerEmergency } = useEmergency();
-
-  const handleSOS = async () => {
-    // Ideally, get current location from a hook here
-    await triggerEmergency({ type: "Medical", location: { lat: 12.97, lng: 79.15 } });
-    alert("Emergency Sent!");
-  };
+  const { user } = useAuth();
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="flex flex-col items-center mt-20">
-        <h1 className="text-3xl font-bold">Welcome, Janu</h1>
-        <SOSButton onTrigger={handleSOS} />
+      <div className="flex flex-col items-center mt-16 px-4">
+        <h1 className="text-3xl font-bold text-gray-800 mb-1">
+          Welcome, {user?.name || "User"} 👋
+        </h1>
+        <p className="text-gray-500 mb-8">Your safety is our priority</p>
+        <SOSButton />
       </div>
     </div>
   );
