@@ -54,6 +54,21 @@ const Navbar = ({ transparent = false }) => {
                 {user.role === 'volunteer' ? 'Verified Responder' : 'Citizen Member'}
               </span>
             </div>
+            
+            <button
+              onClick={handleDashboard}
+              className={`p-2.5 px-4 rounded-xl font-black text-[11px] uppercase tracking-wider transition-all duration-200 flex items-center gap-2 ${
+                transparent 
+                  ? 'bg-white/10 text-white hover:bg-white/20 border border-white/10' 
+                  : 'bg-slate-50 text-slate-500 hover:bg-red-50 hover:text-red-600 border border-slate-100'
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>
+              </svg>
+              <span className="hidden lg:block">Dashboard</span>
+            </button>
+
             <button
               onClick={handleLogout}
               className={`px-5 py-2.5 rounded-xl font-black text-[11px] uppercase tracking-wider transition-all duration-200 ${
