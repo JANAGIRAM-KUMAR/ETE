@@ -14,6 +14,7 @@ const VideoCall = ({ targetId, userId, userName }) => {
   const [callReceived, setCallReceived] = useState(false);
   const [onCall, setOnCall] = useState(false);
   const [stream, setStream] = useState(null);
+  const [remoteStream, setRemoteStream] = useState(null);
   const [callerSignal, setCallerSignal] = useState(null);
   const [callerId, setCallerId] = useState("");
   const [callerName, setCallerName] = useState("");
@@ -59,6 +60,18 @@ const VideoCall = ({ targetId, userId, userName }) => {
     }
   }, [onCall]);
 
+  // Sync streams to video refs whenever they are available
+  useEffect(() => {
+    if (onCall && callType === "video") {
+      if (myVideo.current && stream) {
+        myVideo.current.srcObject = stream;
+      }
+      if (userVideo.current && remoteStream) {
+        userVideo.current.srcObject = remoteStream;
+      }
+    }
+  }, [onCall, stream, remoteStream, callType]);
+
   const startTimer = () => {
     timerRef.current = setInterval(() => {
       setCallDuration((prev) => prev + 1);
@@ -83,6 +96,8 @@ const VideoCall = ({ targetId, userId, userName }) => {
     if (stream) {
       stream.getTracks().forEach(track => track.stop());
     }
+    setStream(null);
+    setRemoteStream(null);
   };
 
   const startStream = async (type) => {
@@ -93,9 +108,6 @@ const VideoCall = ({ targetId, userId, userName }) => {
       };
       const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
       setStream(mediaStream);
-      if (myVideo.current && type === "video") {
-        myVideo.current.srcObject = mediaStream;
-      }
       return mediaStream;
     } catch (err) {
       console.error("Failed to get media devices:", err);
@@ -116,6 +128,12 @@ const VideoCall = ({ targetId, userId, userName }) => {
       initiator: true,
       trickle: false,
       stream: mediaStream,
+      config: {
+        iceServers: [
+          { urls: "stun:stun.l.google.com:19302" },
+          { urls: "stun:stun1.l.google.com:19302" }
+        ]
+      }
     });
 
     peer.on("signal", (data) => {
@@ -128,10 +146,8 @@ const VideoCall = ({ targetId, userId, userName }) => {
       });
     });
 
-    peer.on("stream", (remoteStream) => {
-      if (userVideo.current) {
-        userVideo.current.srcObject = remoteStream;
-      }
+    peer.on("stream", (remStream) => {
+      setRemoteStream(remStream);
     });
 
     const offCallAnswered = listenCallAnswered((data) => {
@@ -153,16 +169,20 @@ const VideoCall = ({ targetId, userId, userName }) => {
       initiator: false,
       trickle: false,
       stream: mediaStream,
+      config: {
+        iceServers: [
+          { urls: "stun:stun.l.google.com:19302" },
+          { urls: "stun:stun1.l.google.com:19302" }
+        ]
+      }
     });
 
     peer.on("signal", (data) => {
       emitAnswerCall({ to: callerId, signal: data });
     });
 
-    peer.on("stream", (remoteStream) => {
-      if (userVideo.current) {
-        userVideo.current.srcObject = remoteStream;
-      }
+    peer.on("stream", (remStream) => {
+      setRemoteStream(remStream);
     });
 
     peer.signal(callerSignal);
@@ -178,7 +198,6 @@ const VideoCall = ({ targetId, userId, userName }) => {
     setOnCall(false);
     setCallReceived(false);
     setCalling(false);
-    setStream(null);
   };
 
   const toggleVideo = () => {
@@ -201,9 +220,7 @@ const VideoCall = ({ targetId, userId, userName }) => {
     }
   };
 
-  // Expose start call functions globally or via window for ChatBox to trigger if needed
-  // Alternatively, since we are in React, we might want to use a more React-way
-  // but for the sake of simplicity and instructions, we'll listen for a custom event
+  // Expose start call functions via custom events
   useEffect(() => {
     const handleStartAudio = () => callUser("audio");
     const handleStartVideo = () => callUser("video");
@@ -393,16 +410,6 @@ const VideoCall = ({ targetId, userId, userName }) => {
                     </svg>
                   )}
                 </button>
-              )}
-
-              {callType === "audio" && (
-                 <button
-                 className="w-14 h-14 rounded-full flex items-center justify-center bg-white/10 text-white hover:bg-white/20 transition-all active:scale-90 shadow-xl"
-               >
-                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1V10a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                 </svg>
-               </button>
               )}
             </div>
           </div>

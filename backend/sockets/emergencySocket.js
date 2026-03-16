@@ -69,8 +69,8 @@ const initializeSocket = (io) => {
 
     // --- WebRTC Signaling for Video/Audio Calls ---
     socket.on("call-user", (data) => {
-      const { userToCall, signalData, from, name } = data;
-      io.to(userToCall).emit("call-made", { signal: signalData, from, name });
+      const { userToCall, signalData, from, name, type } = data;
+      io.to(userToCall).emit("call-made", { signal: signalData, from, name, type });
     });
 
     socket.on("answer-call", (data) => {
