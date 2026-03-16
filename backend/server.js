@@ -45,7 +45,7 @@ app.use("/api/volunteers", volunteerRoutes);
 
 // Health check
 app.get("/", (req, res) => {
-  res.json({ message: "Neighborhood Emergency Response Network API is running" });
+  res.json({ message: "SOSync API is running" });
 });
 
 // Initialize Socket.io event handlers

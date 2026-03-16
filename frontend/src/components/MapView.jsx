@@ -6,7 +6,7 @@ import "leaflet/dist/leaflet.css";
 const defaultCenter = [20.5937, 78.9629];
 
 /**
- * Compact Tactical SVG Markers for ETE Network
+ * Compact Tactical SVG Markers for SOSync
  * Scaled down for a more refined map presence
  */
 
