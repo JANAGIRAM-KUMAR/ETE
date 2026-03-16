@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
+import Peer from "simple-peer";
 import { 
   emitCallUser, 
   listenCallMade, 
   emitAnswerCall, 
   listenCallAnswered, 
-  emitIceCandidate, 
-  listenIceCandidate,
   emitEndCall,
   listenEndCall 
 } from "../services/socketService";
@@ -36,17 +35,25 @@ const VideoCall = ({ targetId, userId, userName }) => {
 
     // Listen for end call from other side
     const offEndCall = listenEndCall(() => {
-      handleEndCall();
+      handleEndCall(false); // don't emit end call back
     });
 
     return () => {
       offCallMade();
       offEndCall();
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
+      destroyPeer();
     };
-  }, [stream]);
+  }, []);
+
+  const destroyPeer = () => {
+    if (connectionRef.current) {
+      connectionRef.current.destroy();
+      connectionRef.current = null;
+    }
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+    }
+  };
 
   const startStream = async () => {
     try {
@@ -65,44 +72,37 @@ const VideoCall = ({ targetId, userId, userName }) => {
   const callUser = async () => {
     setCalling(true);
     const mediaStream = await startStream();
-    if (!mediaStream) return;
+    if (!mediaStream) {
+      setCalling(false);
+      return;
+    }
 
-    const peer = new RTCPeerConnection({
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+    const peer = new Peer({
+      initiator: true,
+      trickle: false,
+      stream: mediaStream,
     });
 
-    mediaStream.getTracks().forEach(track => peer.addTrack(track, mediaStream));
+    peer.on("signal", (data) => {
+      emitCallUser({
+        userToCall: targetId,
+        signalData: data,
+        from: userId,
+        name: userName
+      });
+    });
 
-    peer.onicecandidate = (event) => {
-      if (event.candidate) {
-        emitIceCandidate({ to: targetId, candidate: event.candidate });
-      }
-    };
-
-    peer.ontrack = (event) => {
+    peer.on("stream", (remoteStream) => {
       if (userVideo.current) {
-        userVideo.current.srcObject = event.streams[0];
+        userVideo.current.srcObject = remoteStream;
       }
-    };
-
-    const offer = await peer.createOffer();
-    await peer.setLocalDescription(offer);
-
-    emitCallUser({
-      userToCall: targetId,
-      signalData: offer,
-      from: userId,
-      name: userName
     });
 
     const offCallAnswered = listenCallAnswered((data) => {
-      peer.setRemoteDescription(new RTCSessionDescription(data.signal));
+      peer.signal(data.signal);
       setOnCall(true);
       setCalling(false);
-    });
-
-    const offIce = listenIceCandidate((data) => {
-      peer.addIceCandidate(new RTCIceCandidate(data.candidate));
+      offCallAnswered();
     });
 
     connectionRef.current = peer;
@@ -113,46 +113,32 @@ const VideoCall = ({ targetId, userId, userName }) => {
     const mediaStream = await startStream();
     if (!mediaStream) return;
 
-    const peer = new RTCPeerConnection({
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+    const peer = new Peer({
+      initiator: false,
+      trickle: false,
+      stream: mediaStream,
     });
 
-    mediaStream.getTracks().forEach(track => peer.addTrack(track, mediaStream));
+    peer.on("signal", (data) => {
+      emitAnswerCall({ to: callerId, signal: data });
+    });
 
-    peer.onicecandidate = (event) => {
-      if (event.candidate) {
-        emitIceCandidate({ to: callerId, candidate: event.candidate });
-      }
-    };
-
-    peer.ontrack = (event) => {
+    peer.on("stream", (remoteStream) => {
       if (userVideo.current) {
-        userVideo.current.srcObject = event.streams[0];
+        userVideo.current.srcObject = remoteStream;
       }
-    };
-
-    await peer.setRemoteDescription(new RTCSessionDescription(callerSignal));
-    const answer = await peer.createAnswer();
-    await peer.setLocalDescription(answer);
-
-    emitAnswerCall({ to: callerId, signal: answer });
-
-    const offIce = listenIceCandidate((data) => {
-      peer.addIceCandidate(new RTCIceCandidate(data.candidate));
     });
 
+    peer.signal(callerSignal);
     setOnCall(true);
     connectionRef.current = peer;
   };
 
-  const handleEndCall = () => {
-    emitEndCall({ to: targetId || callerId });
-    if (connectionRef.current) {
-      connectionRef.current.close();
+  const handleEndCall = (emitBack = true) => {
+    if (emitBack) {
+      emitEndCall({ to: targetId || callerId });
     }
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-    }
+    destroyPeer();
     setOnCall(false);
     setCallReceived(false);
     setCalling(false);
@@ -162,16 +148,20 @@ const VideoCall = ({ targetId, userId, userName }) => {
   const toggleVideo = () => {
     if (stream) {
       const videoTrack = stream.getVideoTracks()[0];
-      videoTrack.enabled = !videoTrack.enabled;
-      setVideoEnabled(videoTrack.enabled);
+      if (videoTrack) {
+        videoTrack.enabled = !videoTrack.enabled;
+        setVideoEnabled(videoTrack.enabled);
+      }
     }
   };
 
   const toggleAudio = () => {
     if (stream) {
       const audioTrack = stream.getAudioTracks()[0];
-      audioTrack.enabled = !audioTrack.enabled;
-      setAudioEnabled(audioTrack.enabled);
+      if (audioTrack) {
+        audioTrack.enabled = !audioTrack.enabled;
+        setAudioEnabled(audioTrack.enabled);
+      }
     }
   };
 
@@ -208,10 +198,10 @@ const VideoCall = ({ targetId, userId, userName }) => {
             {callReceived ? (
               <>
                 <button onClick={answerCall} className="bg-emerald-500 text-white px-8 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-emerald-200">Accept</button>
-                <button onClick={handleEndCall} className="bg-red-600 text-white px-8 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-red-200">Decline</button>
+                <button onClick={() => handleEndCall()} className="bg-red-600 text-white px-8 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-red-200">Decline</button>
               </>
             ) : (
-              <button onClick={handleEndCall} className="bg-red-600 text-white px-10 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-red-200">Cancel</button>
+              <button onClick={() => handleEndCall()} className="bg-red-600 text-white px-10 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-red-200">Cancel</button>
             )}
           </div>
         </div>
@@ -233,7 +223,7 @@ const VideoCall = ({ targetId, userId, userName }) => {
               <button onClick={toggleVideo} className={`p-3 rounded-2xl backdrop-blur-md transition-all ${videoEnabled ? 'bg-white/10 text-white' : 'bg-red-600 text-white'}`}>
                 {videoEnabled ? '📷' : '🚫'}
               </button>
-              <button onClick={handleEndCall} className="p-3 bg-red-600 text-white rounded-2xl shadow-xl active:scale-90">
+              <button onClick={() => handleEndCall()} className="p-3 bg-red-600 text-white rounded-2xl shadow-xl active:scale-90">
                 <svg className="w-5 h-5 rotate-[135deg]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
