@@ -28,9 +28,9 @@ const Navbar = ({ transparent = false }) => {
       <div className="flex items-center gap-8">
         <Link to="/" className={logoClass}>
           <div className="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/20">
-            <span className="text-white text-xl">E</span>
+            <span className="text-white text-xl">S</span>
           </div>
-          <span className="hidden sm:block">ETE Network</span>
+          <span className="hidden sm:block">SOSync</span>
         </Link>
         
         {user && (
