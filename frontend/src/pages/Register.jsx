@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
+import { AlertCircle } from "lucide-react";
 
 const Register = () => {
   const [data, setData] = useState({
@@ -46,7 +47,7 @@ const Register = () => {
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
       <div className="w-full max-w-2xl bg-white rounded-3xl shadow-xl border border-slate-100 p-8 md:p-10">
         <div className="flex flex-col items-center mb-10">
-          <div className="w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center text-white text-3xl font-black mb-6 shadow-lg shadow-red-200">
+          <div className="w-16 h-16 bg-red-900 rounded-2xl flex items-center justify-center text-white text-3xl font-black mb-6 shadow-lg shadow-red-200">
             S
           </div>
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">Join SOSync</h1>
@@ -57,7 +58,7 @@ const Register = () => {
 
         {error && (
           <div className="bg-red-50 border border-red-100 p-4 rounded-2xl text-red-700 text-sm font-bold flex items-center gap-2 mb-8 animate-shake">
-            <span className="text-lg">⚠️</span> {error}
+            <AlertCircle size={20} /> {error}
           </div>
         )}
 
@@ -68,7 +69,7 @@ const Register = () => {
             </label>
             <input
               required
-              className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-4 focus:ring-red-100 focus:border-red-600 transition-all outline-none font-medium text-slate-700"
+              className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-4 focus:ring-red-100 focus:border-red-900 transition-all outline-none font-medium text-slate-700"
               placeholder="John Doe"
               value={data.name}
               onChange={(e) => setData({ ...data, name: e.target.value })}
@@ -82,7 +83,7 @@ const Register = () => {
             <input
               type="email"
               required
-              className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-4 focus:ring-red-100 focus:border-red-600 transition-all outline-none font-medium text-slate-700"
+              className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-4 focus:ring-red-100 focus:border-red-900 transition-all outline-none font-medium text-slate-700"
               placeholder="john@example.com"
               value={data.email}
               onChange={(e) => setData({ ...data, email: e.target.value })}
@@ -96,7 +97,7 @@ const Register = () => {
             <input
               type="tel"
               required
-              className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-4 focus:ring-red-100 focus:border-red-600 transition-all outline-none font-medium text-slate-700"
+              className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-4 focus:ring-red-100 focus:border-red-900 transition-all outline-none font-medium text-slate-700"
               placeholder="+1 (555) 000-0000"
               value={data.phone}
               onChange={(e) => setData({ ...data, phone: e.target.value })}
@@ -108,7 +109,7 @@ const Register = () => {
               Account Role
             </label>
             <select
-              className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-4 focus:ring-red-100 focus:border-red-600 transition-all outline-none font-medium text-slate-700 appearance-none"
+              className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-4 focus:ring-red-100 focus:border-red-900 transition-all outline-none font-medium text-slate-700 appearance-none"
               value={data.role}
               onChange={(e) => setData({ ...data, role: e.target.value })}
             >
@@ -125,7 +126,7 @@ const Register = () => {
               type="password"
               required
               minLength={6}
-              className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-4 focus:ring-red-100 focus:border-red-600 transition-all outline-none font-medium text-slate-700"
+              className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-4 focus:ring-red-100 focus:border-red-900 transition-all outline-none font-medium text-slate-700"
               placeholder="••••••••"
               value={data.password}
               onChange={(e) => setData({ ...data, password: e.target.value })}
@@ -136,7 +137,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-5 px-4 bg-red-600 hover:bg-red-700 text-white rounded-2xl shadow-lg shadow-red-200 text-lg font-black transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+              className="w-full py-5 px-4 bg-red-900 hover:bg-red-700 text-white rounded-2xl shadow-lg shadow-red-200 text-lg font-black transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
             >
               {loading ? "Creating Account..." : "Join SOSync Network"}
             </button>
@@ -147,7 +148,7 @@ const Register = () => {
           Already have an account?{" "}
           <Link
             to="/login"
-            className="font-black text-red-600 hover:text-red-700 transition-colors"
+            className="font-black text-red-900 hover:text-red-700 transition-colors"
           >
             Sign In here
           </Link>

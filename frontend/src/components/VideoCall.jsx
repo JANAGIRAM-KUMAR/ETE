@@ -8,6 +8,7 @@ import {
   emitEndCall,
   listenEndCall 
 } from "../services/socketService";
+import { User } from "lucide-react";
 
 const VideoCall = ({ targetId, userId, userName }) => {
   const [calling, setCalling] = useState(false);
@@ -27,6 +28,32 @@ const VideoCall = ({ targetId, userId, userName }) => {
   const userVideo = useRef();
   const connectionRef = useRef();
   const timerRef = useRef();
+
+  const stopTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+  };
+
+  const destroyPeer = () => {
+    if (connectionRef.current) {
+      connectionRef.current.destroy();
+      connectionRef.current = null;
+    }
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+    }
+    setStream(null);
+    setRemoteStream(null);
+  };
+
+  const handleEndCall = (emitBack = true) => {
+    if (emitBack) {
+      emitEndCall({ to: targetId || callerId });
+    }
+    destroyPeer();
+    setOnCall(false);
+    setCallReceived(false);
+    setCalling(false);
+  };
 
   useEffect(() => {
     // Listen for incoming calls
@@ -49,7 +76,13 @@ const VideoCall = ({ targetId, userId, userName }) => {
       destroyPeer();
       stopTimer();
     };
-  }, []);
+  }, [callerId, targetId]);
+
+  const startTimer = () => {
+    timerRef.current = setInterval(() => {
+      setCallDuration((prev) => prev + 1);
+    }, 1000);
+  };
 
   useEffect(() => {
     if (onCall) {
@@ -72,32 +105,10 @@ const VideoCall = ({ targetId, userId, userName }) => {
     }
   }, [onCall, stream, remoteStream, callType]);
 
-  const startTimer = () => {
-    timerRef.current = setInterval(() => {
-      setCallDuration((prev) => prev + 1);
-    }, 1000);
-  };
-
-  const stopTimer = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-  };
-
   const formatDuration = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  const destroyPeer = () => {
-    if (connectionRef.current) {
-      connectionRef.current.destroy();
-      connectionRef.current = null;
-    }
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-    }
-    setStream(null);
-    setRemoteStream(null);
   };
 
   const startStream = async (type) => {
@@ -190,16 +201,6 @@ const VideoCall = ({ targetId, userId, userName }) => {
     connectionRef.current = peer;
   };
 
-  const handleEndCall = (emitBack = true) => {
-    if (emitBack) {
-      emitEndCall({ to: targetId || callerId });
-    }
-    destroyPeer();
-    setOnCall(false);
-    setCallReceived(false);
-    setCalling(false);
-  };
-
   const toggleVideo = () => {
     if (stream) {
       const videoTrack = stream.getVideoTracks()[0];
@@ -232,7 +233,7 @@ const VideoCall = ({ targetId, userId, userName }) => {
       window.removeEventListener("startAudioCall", handleStartAudio);
       window.removeEventListener("startVideoCall", handleStartVideo);
     };
-  }, [targetId, userId, userName]);
+  }, [targetId, userId, userName, callType]);
 
   if (!calling && !callReceived && !onCall) return null;
 
@@ -256,8 +257,8 @@ const VideoCall = ({ targetId, userId, userName }) => {
             </div>
 
             <div className="relative">
-              <div className="w-32 h-32 bg-slate-700 rounded-full flex items-center justify-center text-5xl shadow-inner border-4 border-slate-600">
-                👤
+              <div className="w-32 h-32 bg-slate-700 rounded-full flex items-center justify-center shadow-inner border-4 border-slate-600 text-slate-400">
+                <User size={64} />
               </div>
               <div className="absolute inset-0 rounded-full border-4 border-emerald-500 animate-ping opacity-20"></div>
               <div className="absolute inset-0 rounded-full border-2 border-emerald-500 animate-pulse opacity-40"></div>
@@ -279,7 +280,7 @@ const VideoCall = ({ targetId, userId, userName }) => {
               <div className="flex flex-col items-center gap-3">
                 <button
                   onClick={() => handleEndCall()}
-                  className="w-16 h-16 bg-red-600 text-white rounded-full flex items-center justify-center shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all active:scale-90"
+                  className="w-16 h-16 bg-red-900 text-white rounded-full flex items-center justify-center shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all active:scale-90"
                 >
                   <svg className="w-8 h-8 rotate-[135deg]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -303,8 +304,8 @@ const VideoCall = ({ targetId, userId, userName }) => {
             </div>
 
             <div className="relative">
-              <div className="w-32 h-32 bg-slate-700 rounded-full flex items-center justify-center text-5xl shadow-inner border-4 border-slate-600">
-                👤
+              <div className="w-32 h-32 bg-slate-700 rounded-full flex items-center justify-center shadow-inner border-4 border-slate-600 text-slate-400">
+                <User size={64} />
               </div>
               <div className="absolute inset-0 rounded-full border-4 border-red-500 animate-pulse opacity-20"></div>
               <div className="absolute inset-0 rounded-full border-2 border-red-500 animate-ping opacity-40"></div>
@@ -313,7 +314,7 @@ const VideoCall = ({ targetId, userId, userName }) => {
             <div className="flex flex-col items-center gap-3">
               <button
                 onClick={() => handleEndCall()}
-                className="w-16 h-16 bg-red-600 text-white rounded-full flex items-center justify-center shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all active:scale-90"
+                className="w-16 h-16 bg-red-900 text-white rounded-full flex items-center justify-center shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all active:scale-90"
               >
                 <svg className="w-8 h-8 rotate-[135deg]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -351,8 +352,8 @@ const VideoCall = ({ targetId, userId, userName }) => {
             ) : (
               /* AUDIO LAYOUT */
               <div className="flex-1 flex flex-col items-center justify-center gap-8">
-                <div className="w-32 h-32 bg-slate-800 rounded-full flex items-center justify-center text-5xl border-4 border-slate-700 shadow-2xl">
-                  👤
+                <div className="w-32 h-32 bg-slate-800 rounded-full flex items-center justify-center border-4 border-slate-700 shadow-2xl text-slate-400">
+                  <User size={64} />
                 </div>
                 <div className="text-center space-y-2">
                   <h3 className="text-xl font-black text-white">{callerName || "Responder"}</h3>
@@ -368,7 +369,7 @@ const VideoCall = ({ targetId, userId, userName }) => {
                 className={`w-14 h-14 rounded-full flex items-center justify-center transition-all active:scale-90 shadow-xl ${
                   audioEnabled 
                     ? "bg-white/10 text-white hover:bg-white/20" 
-                    : "bg-red-600 text-white"
+                    : "bg-red-900 text-white"
                 }`}
               >
                 {audioEnabled ? (
@@ -384,7 +385,7 @@ const VideoCall = ({ targetId, userId, userName }) => {
 
               <button
                 onClick={() => handleEndCall()}
-                className="w-16 h-16 bg-red-600 text-white rounded-full flex items-center justify-center shadow-2xl shadow-red-500/40 hover:bg-red-700 transition-all active:scale-90"
+                className="w-16 h-16 bg-red-900 text-white rounded-full flex items-center justify-center shadow-2xl shadow-red-500/40 hover:bg-red-700 transition-all active:scale-90"
               >
                 <svg className="w-8 h-8 rotate-[135deg]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -397,7 +398,7 @@ const VideoCall = ({ targetId, userId, userName }) => {
                   className={`w-14 h-14 rounded-full flex items-center justify-center transition-all active:scale-90 shadow-xl ${
                     videoEnabled 
                       ? "bg-white/10 text-white hover:bg-white/20" 
-                      : "bg-red-600 text-white"
+                      : "bg-red-900 text-white"
                   }`}
                 >
                   {videoEnabled ? (

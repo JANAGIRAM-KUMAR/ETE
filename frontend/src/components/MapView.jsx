@@ -46,7 +46,7 @@ const emergencyIcon = L.divIcon({
   html: `
     <div class="relative flex items-center justify-center w-10 h-10">
       <div class="absolute inset-0 bg-red-500 rounded-full animate-ping opacity-30"></div>
-      <div class="relative bg-red-600 text-white p-2 rounded-xl shadow-lg border-2 border-white">
+      <div class="relative bg-red-900 text-white p-2 rounded-xl shadow-lg border-2 border-white">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
         </svg>
@@ -108,7 +108,7 @@ const MapView = ({ userLocation, volunteers = [], emergencyLocation, className =
           >
             <Popup>
               <div class="px-1 text-center">
-                <p class="text-[10px] font-black text-red-600 uppercase tracking-widest">Active Emergency</p>
+                <p class="text-[10px] font-black text-red-900 uppercase tracking-widest">Active Emergency</p>
               </div>
             </Popup>
           </Marker>

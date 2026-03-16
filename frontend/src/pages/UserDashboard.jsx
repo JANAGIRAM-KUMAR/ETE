@@ -39,7 +39,7 @@ const UserDashboard = () => {
         <div className="w-full md:w-[420px] flex flex-col bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/40 p-10 border border-slate-100 shrink-0 overflow-y-auto custom-scrollbar">
           <div className="mb-12">
             <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">
-              Welcome, <span className="text-red-600">{user?.name?.split(" ")[0] || "User"}</span>
+              Welcome, <span className="text-red-900">{user?.name?.split(" ")[0] || "User"}</span>
             </h1>
             <div className="flex items-center gap-2 mt-3">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
@@ -84,7 +84,7 @@ const UserDashboard = () => {
             <div className="bg-white/95 backdrop-blur-xl px-5 py-3 rounded-2xl shadow-2xl border border-slate-100 flex items-center gap-3">
               <div className="relative">
                 <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-ping absolute inset-0"></div>
-                <div className="w-2.5 h-2.5 bg-red-600 rounded-full relative"></div>
+                <div className="w-2.5 h-2.5 bg-red-900 rounded-full relative"></div>
               </div>
               <span className="text-xs font-black text-slate-800 uppercase tracking-widest">Live Safety Monitor</span>
             </div>

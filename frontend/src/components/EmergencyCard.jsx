@@ -7,7 +7,7 @@ const EmergencyCard = ({ emergency, onAccept }) => {
   const typeColors = {
     medical: "text-blue-600 bg-blue-50 border-blue-100",
     fire: "text-orange-600 bg-orange-50 border-orange-100",
-    accident: "text-red-600 bg-red-50 border-red-100",
+    accident: "text-red-900 bg-red-50 border-red-100",
     crime: "text-slate-700 bg-slate-50 border-slate-200",
   };
 
@@ -49,7 +49,7 @@ const EmergencyCard = ({ emergency, onAccept }) => {
         {emergency.status === "pending" && onAccept && (
           <button
             onClick={onAccept}
-            className="w-full bg-red-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-red-500/25 hover:bg-red-700 hover:shadow-red-500/40 transition-all active:scale-[0.97]"
+            className="w-full bg-red-900 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-red-500/25 hover:bg-red-700 hover:shadow-red-500/40 transition-all active:scale-[0.97]"
           >
             Accept Mission
           </button>
