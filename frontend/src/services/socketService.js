@@ -124,6 +124,24 @@ export const emitAcceptEmergency = (data) => {
 };
 
 /**
+ * Emit a resolve-emergency socket event.
+ * @param {Object} data - { userId, emergencyId }
+ */
+export const emitResolveEmergency = (data) => {
+  socket.emit("resolve-emergency", data);
+};
+
+/**
+ * Listen for emergency resolution notifications.
+ * @param {Function} callback - called with resolution data
+ * @returns {Function} cleanup function
+ */
+export const listenResolveEmergency = (callback) => {
+  socket.on("resolve-emergency", callback);
+  return () => socket.off("resolve-emergency", callback);
+};
+
+/**
  * Send real-time location update.
  * @param {Object} data - { targetId, latitude, longitude, senderId }
  */

@@ -20,7 +20,7 @@ const ChatBox = ({ emergencyId, senderId, targetId }) => {
   const handleSend = () => {
     if (!text.trim()) return;
     if (!emergencyId || !senderId || !targetId) {
-      alert("Chat unavailable: missing emergency or participant info.");
+      alert("Establishing secure communication link...");
       return;
     }
     sendChatMessage({ emergencyId, senderId, message: text, targetId });
@@ -29,43 +29,72 @@ const ChatBox = ({ emergencyId, senderId, targetId }) => {
   };
 
   return (
-    <div className="w-full rounded-xl overflow-hidden shadow-xl bg-white">
-      <div className="bg-red-600 text-white text-center text-xl font-bold py-3">
-        🚑 Emergency Chat
+    <div className="w-full h-full flex flex-col bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/40 border border-slate-100 overflow-hidden">
+      {/* Header - Using Red instead of Black */}
+      <div className="bg-red-600 px-8 py-5 flex items-center justify-between shadow-lg shadow-red-500/20 relative z-10">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-red-600 text-lg shadow-inner">
+            💬
+          </div>
+          <div>
+            <h3 className="text-sm font-black text-white tracking-tight uppercase">Emergency Comms</h3>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <div className="w-1 h-1 bg-white/60 rounded-full animate-pulse"></div>
+              <p className="text-[9px] font-black text-white/60 uppercase tracking-widest">Secure Channel</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="h-[300px] overflow-y-auto p-4 bg-gray-100">
+
+      <div className="flex-1 overflow-y-auto p-8 space-y-5 custom-scrollbar bg-slate-50/30">
         {messages.length === 0 && (
-          <p className="text-gray-400 text-sm">No messages yet. Start communicating...</p>
+          <div className="h-full flex flex-col items-center justify-center text-center px-10 opacity-30">
+            <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest leading-relaxed italic">
+              Channel established. Immediate communication advised for optimal coordination.
+            </p>
+          </div>
         )}
+        
         {messages.map((msg, i) => (
           <div
             key={i}
-            className={`p-3 rounded-lg mb-2 shadow-sm max-w-[80%] ${
-              msg.isSelf ? "bg-red-100 ml-auto text-right" : "bg-white"
-            }`}
+            className={`flex flex-col ${msg.isSelf ? "items-end" : "items-start"}`}
           >
-            <span className="text-xs text-gray-500 block mb-1">
-              {msg.isSelf ? "You" : "Responder"}
+            <div
+              className={`max-w-[85%] px-5 py-3.5 rounded-2xl text-[13px] font-bold shadow-sm ${
+                msg.isSelf 
+                  ? "bg-red-600 text-white rounded-tr-none shadow-red-500/10" 
+                  : "bg-white text-slate-700 border border-slate-100 rounded-tl-none"
+              }`}
+            >
+              {msg.message}
+            </div>
+            <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter mt-2 px-1">
+              {msg.isSelf ? "Transmitted" : "Received"}
             </span>
-            {msg.message}
           </div>
         ))}
         <div ref={bottomRef} />
       </div>
-      <div className="flex p-3 border-t">
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          placeholder="Type message..."
-          className="flex-1 p-3 border rounded-lg text-base outline-none focus:ring-2 focus:ring-red-500"
-        />
-        <button
-          onClick={handleSend}
-          className="ml-3 px-5 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition"
-        >
-          Send
-        </button>
+
+      <div className="p-6 bg-white border-t border-slate-50">
+        <div className="flex items-center gap-3 bg-slate-100 rounded-2xl p-2 border border-slate-200 focus-within:border-red-500 focus-within:ring-4 focus-within:ring-red-100 transition-all duration-300">
+          <input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            placeholder="Type coordination message..."
+            className="flex-1 bg-transparent px-4 py-2 text-sm font-bold text-slate-700 outline-none placeholder:text-slate-400"
+          />
+          <button
+            onClick={handleSend}
+            className="bg-red-600 text-white w-10 h-10 rounded-xl shadow-lg shadow-red-500/30 flex items-center justify-center hover:bg-red-700 transition-all active:scale-90"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );
