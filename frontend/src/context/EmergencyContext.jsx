@@ -14,8 +14,9 @@ export const EmergencyProvider = ({ children }) => {
 
   const triggerEmergency = async (data) => {
     const response = await emergencyService.triggerEmergency(data);
-    setCurrentEmergency(response);
-    return response;
+    const emergency = response.emergency || response;
+    setCurrentEmergency(emergency);
+    return emergency;
   };
 
   const getEmergency = async (id) => {
@@ -25,13 +26,16 @@ export const EmergencyProvider = ({ children }) => {
   };
 
   const acceptEmergency = async (id) => {
-    return await emergencyService.acceptEmergency(id);
+    const response = await emergencyService.acceptEmergency(id);
+    const emergency = response.emergency || response;
+    setCurrentEmergency(emergency);
+    return emergency;
   };
 
   const resolveEmergency = async (id) => {
     const response = await emergencyService.resolveEmergency(id);
     setCurrentEmergency(null);
-    return response;
+    return response.emergency || response;
   };
 
   const getNearbyVolunteers = async (lat, lng) => {
