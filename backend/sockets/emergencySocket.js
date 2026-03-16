@@ -67,6 +67,27 @@ const initializeSocket = (io) => {
       }
     });
 
+    // --- WebRTC Signaling for Video/Audio Calls ---
+    socket.on("call-user", (data) => {
+      const { userToCall, signalData, from, name, type } = data;
+      io.to(userToCall).emit("call-made", { signal: signalData, from, name, type });
+    });
+
+    socket.on("answer-call", (data) => {
+      const { to, signal } = data;
+      io.to(to).emit("call-answered", { signal });
+    });
+
+    socket.on("ice-candidate", (data) => {
+      const { to, candidate } = data;
+      io.to(to).emit("ice-candidate", { candidate });
+    });
+
+    socket.on("end-call", (data) => {
+      const { to } = data;
+      io.to(to).emit("end-call");
+    });
+
     // Disconnect
     socket.on("disconnect", () => {
       console.log(`Socket disconnected: ${socket.id}`);

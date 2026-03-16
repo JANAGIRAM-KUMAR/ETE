@@ -4,10 +4,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import MapView from "../components/MapView";
 import ChatBox from "../components/ChatBox";
 import Navbar from "../components/Navbar";
+import VideoCall from "../components/VideoCall";
 import { useEmergency } from "../context/EmergencyContext";
 import { useAuth } from "../context/AuthContext";
 import { listenAcceptEmergency, listenLocationUpdates, listenResolveEmergency, emitResolveEmergency } from "../services/socketService";
-import { formatEmergencyType, formatDate } from "../utils/helpers";
+import { formatEmergencyType} from "../utils/helpers";
 import useLocation from "../hooks/useLocation";
 
 const EmergencyPage = () => {
@@ -19,6 +20,7 @@ const EmergencyPage = () => {
   const [volunteerLocation, setVolunteerLocation] = useState(null);
   const [accepted, setAccepted] = useState(false);
   const [acceptedVolunteerId, setAcceptedVolunteerId] = useState(null);
+  const [showUserDetails, setShowUserDetails] = useState(false);
 
   useEffect(() => {
     if (id && (!currentEmergency || currentEmergency._id !== id)) {
@@ -92,6 +94,8 @@ const EmergencyPage = () => {
     }
   };
 
+  const reportingUser = typeof emergency.userId === "object" ? emergency.userId : null;
+
   return (
     <div className="min-h-screen bg-slate-50 overflow-auto">
       <Navbar />
@@ -108,7 +112,7 @@ const EmergencyPage = () => {
               <div>
                 <div className="flex items-center gap-3 mb-1">
                   <h1 className="text-2xl font-black text-white tracking-tight">
-                    {formatEmergencyType(emergency.type)} Emergency
+                    {formatEmergencyType(emergency.type)}
                   </h1>
                   <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black text-white uppercase tracking-widest border border-white/20">
                     {emergency.status}
@@ -131,17 +135,76 @@ const EmergencyPage = () => {
                 </div>
               )}
 
-              {user?.role === "volunteer" && emergency.status !== "resolved" && (
-                <button
-                  onClick={handleResolve}
-                  className="bg-white text-red-600 px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-red-50 shadow-xl transition-all active:scale-95"
-                >
-                  Mark Resolved
-                </button>
+              {user?.role === "volunteer" && (
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => setShowUserDetails(true)}
+                    className="bg-white/20 backdrop-blur-md border border-white/30 text-white px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-white/30 transition-all active:scale-95"
+                  >
+                    View User Details
+                  </button>
+                  {emergency.status !== "resolved" && (
+                    <button
+                      onClick={handleResolve}
+                      className="bg-white text-red-600 px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-red-50 shadow-xl transition-all active:scale-95"
+                    >
+                      Mark Resolved
+                    </button>
+                  )}
+                </div>
               )}
             </div>
           </div>
         </div>
+
+        {/* User Details Modal */}
+        {showUserDetails && (
+          <div className="fixed inset-0 z-[2000] flex items-center justify-center p-6">
+            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowUserDetails(false)}></div>
+            <div className="relative bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100 animate-in fade-in zoom-in duration-200">
+              <div className="bg-red-600 p-8 text-white relative">
+                <h2 className="text-xl font-black uppercase tracking-tight">Citizen Details</h2>
+                <p className="text-white/70 text-[10px] font-black uppercase tracking-widest mt-1">Verified Identity Record</p>
+                <button 
+                  onClick={() => setShowUserDetails(false)}
+                  className="absolute top-8 right-8 w-8 h-8 flex items-center justify-center bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="p-10 space-y-8">
+                <div className="space-y-2">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Full Name</p>
+                  <p className="text-xl font-black text-slate-900">{reportingUser?.name || "Unknown User"}</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Phone Number</p>
+                  <p className="text-xl font-black text-red-600">{reportingUser?.phone || "No phone provided"}</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mission Coordinates</p>
+                  <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 flex items-center justify-between">
+                    <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase">Latitude</p>
+                      <p className="text-sm font-black text-slate-700">{emergencyLat?.toFixed(6)}</p>
+                    </div>
+                    <div className="w-px h-8 bg-slate-200"></div>
+                    <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase">Longitude</p>
+                      <p className="text-sm font-black text-slate-700">{emergencyLng?.toFixed(6)}</p>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowUserDetails(false)}
+                  className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-slate-800 transition-all active:scale-[0.98]"
+                >
+                  Dismiss Record
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
           {/* Map Section */}
@@ -177,6 +240,15 @@ const EmergencyPage = () => {
             />
           </div>
         </div>
+
+        {/* Video Call Capability */}
+        {targetId && (
+          <VideoCall 
+            targetId={targetId} 
+            userId={user?._id} 
+            userName={user?.name} 
+          />
+        )}
       </div>
     </div>
   );

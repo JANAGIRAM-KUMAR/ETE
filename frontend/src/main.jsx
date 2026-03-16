@@ -5,6 +5,13 @@ import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { EmergencyProvider } from './context/EmergencyContext.jsx'
+import { Buffer } from 'buffer'
+import process from 'process'
+
+if (typeof window !== 'undefined') {
+  window.Buffer = Buffer
+  window.process = process
+}
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
