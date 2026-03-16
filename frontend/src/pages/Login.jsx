@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
+import { AlertCircle } from "lucide-react";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -40,7 +41,7 @@ const Login = () => {
 
         {error && (
           <div className="bg-red-50 border border-red-100 p-4 rounded-2xl text-red-700 text-sm font-bold flex items-center gap-2 mb-8 animate-shake">
-            <span className="text-lg">⚠️</span> {error}
+            <AlertCircle size={20} /> {error}
           </div>
         )}
 

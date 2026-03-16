@@ -10,6 +10,7 @@ import { useAuth } from "../context/AuthContext";
 import { listenAcceptEmergency, listenLocationUpdates, listenResolveEmergency, emitResolveEmergency } from "../services/socketService";
 import { formatEmergencyType} from "../utils/helpers";
 import useLocation from "../hooks/useLocation";
+import { Siren, X } from "lucide-react";
 
 const EmergencyPage = () => {
   const { id } = useParams();
@@ -40,7 +41,7 @@ const EmergencyPage = () => {
       if (data?.volunteerId) setAcceptedVolunteerId(String(data.volunteerId));
       getEmergency(id);
     });
-    const offLocation = listenLocationUpdates((data) => {
+    const offLocation = listenLocationUpdates(() => {
       setVolunteerLocation({ lat: latitude, lng: longitude });
     });
     const offResolve = listenResolveEmergency((data) => {
@@ -62,7 +63,7 @@ const EmergencyPage = () => {
       <div className="min-h-screen bg-slate-50">
         <Navbar />
         <div className="flex flex-col items-center justify-center h-[60vh]">
-          <div className="w-12 h-12 border-4 border-red-100 border-t-red-600 rounded-full animate-spin mb-4"></div>
+          <div className="w-12 h-12 border-4 border-red-100 border-t-red-900 rounded-full animate-spin mb-4"></div>
           <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Loading Mission Data...</p>
         </div>
       </div>
@@ -101,13 +102,13 @@ const EmergencyPage = () => {
       <Navbar />
       <div className="p-6 max-w-7xl mx-auto space-y-6">
         {/* Status Header */}
-        <div className="bg-red-600 rounded-[2.5rem] p-8 shadow-2xl shadow-red-500/20 relative overflow-hidden">
+        <div className="bg-red-900 rounded-[2.5rem] p-8 shadow-2xl shadow-red-500/20 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-[100px] rounded-full -mr-20 -mt-20"></div>
           
           <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-center gap-6">
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-3xl shadow-xl">
-                🚨
+              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-red-600 shadow-xl">
+                <Siren size={32} />
               </div>
               <div>
                 <div className="flex items-center gap-3 mb-1">
@@ -146,7 +147,7 @@ const EmergencyPage = () => {
                   {emergency.status !== "resolved" && (
                     <button
                       onClick={handleResolve}
-                      className="bg-white text-red-600 px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-red-50 shadow-xl transition-all active:scale-95"
+                      className="bg-white text-red-900 px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-red-50 shadow-xl transition-all active:scale-95"
                     >
                       Mark Resolved
                     </button>
@@ -162,14 +163,14 @@ const EmergencyPage = () => {
           <div className="fixed inset-0 z-[2000] flex items-center justify-center p-6">
             <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowUserDetails(false)}></div>
             <div className="relative bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100 animate-in fade-in zoom-in duration-200">
-              <div className="bg-red-600 p-8 text-white relative">
+              <div className="bg-red-900 p-8 text-white relative">
                 <h2 className="text-xl font-black uppercase tracking-tight">Citizen Details</h2>
                 <p className="text-white/70 text-[10px] font-black uppercase tracking-widest mt-1">Verified Identity Record</p>
                 <button 
                   onClick={() => setShowUserDetails(false)}
                   className="absolute top-8 right-8 w-8 h-8 flex items-center justify-center bg-white/10 rounded-full hover:bg-white/20 transition-colors"
                 >
-                  ✕
+                  <X size={18} />
                 </button>
               </div>
               <div className="p-10 space-y-8">
@@ -179,7 +180,7 @@ const EmergencyPage = () => {
                 </div>
                 <div className="space-y-2">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Phone Number</p>
-                  <p className="text-xl font-black text-red-600">{reportingUser?.phone || "No phone provided"}</p>
+                  <p className="text-xl font-black text-red-900">{reportingUser?.phone || "No phone provided"}</p>
                 </div>
                 <div className="space-y-2">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mission Coordinates</p>
@@ -225,7 +226,7 @@ const EmergencyPage = () => {
             />
             <div className="absolute top-8 left-8 z-[1000] bg-white/95 backdrop-blur-xl px-4 py-2 rounded-2xl shadow-xl border border-slate-100">
               <span className="text-[10px] font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
-                <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-red-900 rounded-full animate-pulse"></div>
                 Mission Map
               </span>
             </div>

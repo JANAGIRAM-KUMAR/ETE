@@ -13,6 +13,7 @@ import {
   isSocketConnected,
 } from "../services/socketService";
 import { useNavigate } from "react-router-dom";
+import { Radio, Shield, MapPin } from "lucide-react";
 
 const VolunteerDashboard = () => {
   const { acceptEmergency } = useEmergency();
@@ -74,7 +75,7 @@ const VolunteerDashboard = () => {
             <div className="flex items-center justify-between mb-3">
               <h1 className="text-2xl font-black text-slate-900 tracking-tight">Active Queue</h1>
               <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-tighter ${
-                socketConnected ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-red-50 text-red-600 border-red-100"
+                socketConnected ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-red-50 text-red-900 border-red-100"
               }`}>
                 <div className={`w-1.5 h-1.5 rounded-full ${socketConnected ? "bg-emerald-500 animate-pulse" : "bg-red-500"}`}></div>
                 {socketConnected ? "Live Connection" : "Offline"}
@@ -88,8 +89,8 @@ const VolunteerDashboard = () => {
           <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-slate-50/30">
             {pendingEmergencies.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center px-10">
-                <div className="w-24 h-24 bg-white rounded-[2rem] flex items-center justify-center text-4xl mb-6 shadow-xl shadow-slate-200/50 border border-slate-50">
-                  📡
+                <div className="w-24 h-24 bg-white rounded-[2rem] flex items-center justify-center mb-6 shadow-xl shadow-slate-200/50 border border-slate-50 text-slate-400">
+                  <Radio size={40} />
                 </div>
                 <p className="font-black text-slate-800 text-lg tracking-tight">Monitoring Signal...</p>
                 <p className="text-[11px] font-bold text-slate-400 mt-2 leading-relaxed uppercase tracking-widest text-center">
@@ -101,7 +102,7 @@ const VolunteerDashboard = () => {
                 <div key={alert.emergencyId} className="relative transition-all duration-300">
                   {accepting === alert.emergencyId && (
                     <div className="absolute inset-0 bg-white/70 backdrop-blur-[2px] flex items-center justify-center rounded-[2rem] z-10">
-                       <div className="w-10 h-10 border-4 border-red-100 border-t-red-600 rounded-full animate-spin"></div>
+                       <div className="w-10 h-10 border-4 border-red-100 border-t-red-900 rounded-full animate-spin"></div>
                     </div>
                   )}
                   <EmergencyCard
@@ -119,10 +120,10 @@ const VolunteerDashboard = () => {
             )}
           </div>
           
-          <div className="p-8 bg-red-600 text-white">
+          <div className="p-8 bg-red-900 text-white">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-xl backdrop-blur-md text-white">
-                🛡️
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md text-white">
+                <Shield size={24} />
               </div>
               <div>
                 <p className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-0.5">Verified Responder</p>
@@ -142,7 +143,7 @@ const VolunteerDashboard = () => {
           <div className="absolute top-8 left-8 z-[1000] bg-white/95 backdrop-blur-xl p-5 rounded-2xl shadow-2xl border border-slate-100 max-w-[260px]">
             <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2.5 ml-1 text-center">Current Coordinates</p>
             <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
-              <div className="text-lg">📍</div>
+              <div className="text-red-900"><MapPin size={18} /></div>
               <p className="text-xs font-black text-slate-700 tracking-tighter">
                 {latitude?.toFixed(5)} , {longitude?.toFixed(5)}
               </p>

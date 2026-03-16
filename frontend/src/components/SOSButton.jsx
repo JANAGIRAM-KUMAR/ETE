@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEmergency } from "../context/EmergencyContext";
 import useLocation from "../hooks/useLocation";
+import { Siren } from "lucide-react";
 
 const EMERGENCY_TYPES = ["medical", "fire", "accident", "crime"];
 
@@ -190,7 +191,7 @@ const SOSButton = () => {
               onClick={() => setType(t)}
               className={`py-4 px-4 rounded-2xl text-[11px] font-black uppercase tracking-wider border-2 transition-all duration-200 ${
                 type === t
-                  ? "border-red-600 bg-red-50 text-red-600 shadow-sm"
+                  ? "border-red-900 bg-red-50 text-red-900 shadow-sm"
                   : "border-slate-100 bg-white text-slate-400 hover:border-slate-200 hover:text-slate-600"
               }`}
             >
@@ -209,11 +210,11 @@ const SOSButton = () => {
           className="relative bg-white text-red-600 w-52 h-52 rounded-full shadow-[0_20px_50px_rgba(220,38,38,0.15)] flex flex-col items-center justify-center border-[12px] border-slate-50 hover:border-red-50 hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-60"
         >
           {loading ? (
-            <div className="w-12 h-12 border-4 border-red-100 border-t-red-600 rounded-full animate-spin"></div>
+            <div className="w-12 h-12 border-4 border-red-100 border-t-red-900 rounded-full animate-spin"></div>
           ) : (
             <>
-              <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center text-white text-4xl mb-2 shadow-lg shadow-red-500/40">
-                🚨
+              <div className="w-20 h-20 bg-red-900 rounded-full flex items-center justify-center text-white mb-2 shadow-lg shadow-red-500/40">
+                <Siren size={48} />
               </div>
               <span className="text-3xl font-black tracking-tighter text-slate-900 uppercase">SOS</span>
             </>
