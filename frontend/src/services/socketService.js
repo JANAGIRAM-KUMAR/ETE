@@ -157,6 +157,44 @@ export const sendChatMessage = (data) => {
   socket.emit("chat-message", data);
 };
 
+// --- WebRTC Signaling ---
+
+export const emitCallUser = (data) => {
+  socket.emit("call-user", data);
+};
+
+export const listenCallMade = (callback) => {
+  socket.on("call-made", callback);
+  return () => socket.off("call-made", callback);
+};
+
+export const emitAnswerCall = (data) => {
+  socket.emit("answer-call", data);
+};
+
+export const listenCallAnswered = (callback) => {
+  socket.on("call-answered", callback);
+  return () => socket.off("call-answered", callback);
+};
+
+export const emitIceCandidate = (data) => {
+  socket.emit("ice-candidate", data);
+};
+
+export const listenIceCandidate = (callback) => {
+  socket.on("ice-candidate", callback);
+  return () => socket.off("ice-candidate", callback);
+};
+
+export const emitEndCall = (data) => {
+  socket.emit("end-call", data);
+};
+
+export const listenEndCall = (callback) => {
+  socket.on("end-call", callback);
+  return () => socket.off("end-call", callback);
+};
+
 /**
  * Disconnect the socket and clear stored identity.
  */
