@@ -30,7 +30,7 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-slate-100 p-8 md:p-10">
         <div className="flex flex-col items-center mb-10">
-          <div className="w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center text-white text-3xl font-black mb-6 shadow-lg shadow-red-200">
+          <div className="w-16 h-16 bg-red-900 rounded-2xl flex items-center justify-center text-white text-3xl font-black mb-6 shadow-lg shadow-red-200">
             S
           </div>
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">Welcome Back</h1>
@@ -53,7 +53,7 @@ const Login = () => {
             <input
               type="email"
               required
-              className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-4 focus:ring-red-100 focus:border-red-600 transition-all outline-none font-medium text-slate-700"
+              className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-4 focus:ring-red-100 focus:border-red-900 transition-all outline-none font-medium text-slate-700"
               placeholder="name@example.com"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -67,7 +67,7 @@ const Login = () => {
             <input
               type="password"
               required
-              className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-4 focus:ring-red-100 focus:border-red-600 transition-all outline-none font-medium text-slate-700"
+              className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-4 focus:ring-red-100 focus:border-red-900 transition-all outline-none font-medium text-slate-700"
               placeholder="••••••••"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -77,7 +77,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 px-4 bg-red-600 hover:bg-red-700 text-white rounded-2xl shadow-lg shadow-red-200 text-lg font-black transition-all active:scale-[0.98] disabled:opacity-50 mt-4 cursor-pointer"
+            className="w-full py-4 px-4 bg-red-900 hover:bg-red-700 text-white rounded-2xl shadow-lg shadow-red-200 text-lg font-black transition-all active:scale-[0.98] disabled:opacity-50 mt-4 cursor-pointer"
           >
             {loading ? "Authenticating..." : "Sign In"}
           </button>
@@ -87,7 +87,7 @@ const Login = () => {
           Don't have an account?{" "}
           <Link
             to="/register"
-            className="font-black text-red-600 hover:text-red-700 transition-colors"
+            className="font-black text-red-900 hover:text-red-700 transition-colors"
           >
             Register Now
           </Link>

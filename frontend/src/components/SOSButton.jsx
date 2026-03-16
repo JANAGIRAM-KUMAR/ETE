@@ -1,3 +1,5 @@
+/* eslint-disable no-empty */
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEmergency } from "../context/EmergencyContext";
@@ -165,7 +167,7 @@ const SOSButton = () => {
             <div className="flex flex-col w-full gap-3">
               <button
                 onClick={executeSOS}
-                className="w-full py-5 bg-red-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] hover:bg-red-700 transition-colors shadow-lg shadow-red-200"
+                className="w-full py-5 bg-red-900 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] hover:bg-red-700 transition-colors shadow-lg shadow-red-200"
               >
                 Confirm Now
               </button>
@@ -207,7 +209,7 @@ const SOSButton = () => {
         <button
           onClick={startSOSCountdown}
           disabled={loading || locLoading || isCountingDown}
-          className="relative bg-white text-red-600 w-52 h-52 rounded-full shadow-[0_20px_50px_rgba(220,38,38,0.15)] flex flex-col items-center justify-center border-[12px] border-slate-50 hover:border-red-50 hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-60"
+          className="relative bg-white text-red-900 w-52 h-52 rounded-full shadow-[0_20px_50px_rgba(220,38,38,0.15)] flex flex-col items-center justify-center border-[12px] border-slate-50 hover:border-red-50 hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-60"
         >
           {loading ? (
             <div className="w-12 h-12 border-4 border-red-100 border-t-red-900 rounded-full animate-spin"></div>

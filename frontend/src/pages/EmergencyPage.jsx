@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -107,7 +108,7 @@ const EmergencyPage = () => {
           
           <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-center gap-6">
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-red-600 shadow-xl">
+              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-red-900 shadow-xl">
                 <Siren size={32} />
               </div>
               <div>
