@@ -17,6 +17,7 @@ export const loginUser = async (data) => {
   const response = await API.post("/auth/login", data);
   if (response.data.token) {
     localStorage.setItem("token", response.data.token);
+    localStorage.setItem("user", JSON.stringify(response.data.user));
   }
   return response.data;
 };
@@ -26,6 +27,7 @@ export const loginUser = async (data) => {
  */
 export const logout = () => {
   localStorage.removeItem("token");
+  localStorage.removeItem("user");
 };
 
 /**
@@ -41,11 +43,15 @@ export const getCurrentUser = () => {
     // Check if token is expired
     if (payload.exp && payload.exp * 1000 < Date.now()) {
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
       return null;
     }
-    return payload;
+    // Return the stored user object (has name, role, etc.) if available
+    const stored = localStorage.getItem("user");
+    return stored ? JSON.parse(stored) : payload;
   } catch {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     return null;
   }
 };
